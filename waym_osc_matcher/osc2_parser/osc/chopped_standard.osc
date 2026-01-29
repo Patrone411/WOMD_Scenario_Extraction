@@ -1,0 +1,568 @@
+# Length
+type length is SI(m: 1)
+unit nanometer  of length is SI(m: 1, factor: 0.000000001)
+unit micrometer of length is SI(m: 1, factor: 0.000001)
+unit millimeter of length is SI(m: 1, factor: 0.001)
+unit centimeter of length is SI(m: 1, factor: 0.01)
+unit meter      of length is SI(m: 1, factor: 1)
+unit kilometer  of length is SI(m: 1, factor: 1000)
+unit inch       of length is SI(m: 1, factor: 0.0254)
+unit feet       of length is SI(m: 1, factor: 0.3048)
+unit mile       of length is SI(m: 1, factor: 1609.344)
+
+# Time
+type time is SI(s: 1)
+unit millisecond of time is SI(s: 1, factor: 0.001)
+unit second      of time is SI(s: 1, factor: 1)
+unit minute      of time is SI(s: 1, factor: 60)
+unit hour        of time is SI(s: 1, factor: 3600)
+
+# Speed
+type speed is SI(m: 1, s: -1)
+unit meter_per_second    of speed is SI(m: 1, s: -1, factor: 1)
+unit kilometer_per_hour  of speed is SI(m: 1, s: -1, factor: 0.277777778)
+unit mile_per_hour       of speed is SI(m: 1, s: -1, factor: 0.447038889)
+unit millimeter_per_hour of speed is SI(m: 1, s: -1, factor: 0.000000278)
+
+# Acceleration
+type acceleration is SI(m: 1, s: -2)
+unit meter_per_sec_sqr          of acceleration is SI(m: 1, s: -2, factor: 1)
+unit kilometer_per_hour_per_sec of acceleration is SI(m: 1, s: -2, factor: 0.277777778)
+unit mile_per_hour_per_sec      of acceleration is SI(m: 1, s: -2, factor: 0.447038889)
+
+# Jerk
+type jerk is SI(m: 1, s: -3)
+unit meter_per_sec_cubed of jerk is SI(m: 1, s: -3, factor: 1)
+unit mile_per_sec_cubed  of jerk is SI(m: 1, s: -3, factor: 1609.344)
+
+# Angle
+type angle is SI(rad: 1)
+unit degree of angle is SI(rad: 1, factor: 57.295779513)
+unit radian of angle is SI(rad: 1, factor: 1)
+
+# Angular rate
+type angular_rate is SI(rad: 1, s: -1)
+unit degree_per_sec of angular_rate is SI(rad: 1, s: -1, factor: 57.295779513)
+unit radian_per_sec of angular_rate is SI(rad: 1, s: -1, factor: 1)
+
+# Angular acceleration
+type angular_acceleration is SI(rad: 1, s: -2)
+unit degree_per_sec_sqr of angular_acceleration is SI(rad: 1, s: -2, factor: 57.295779513)
+unit radian_per_sec_sqr of angular_acceleration is SI(rad: 1, s: -2, factor: 1)
+
+# Mass
+type mass is SI(kg: 1)
+unit gram     of mass is SI(kg: 1, factor: 0.001)
+unit kilogram of mass is SI(kg: 1, factor: 1)
+unit ton      of mass is SI(kg: 1, factor: 1000)
+unit pound    of mass is SI(kg: 1, factor: 0.45359237)
+
+
+###########
+# Enums
+###########
+
+enum color: [
+    white, silver, gray, black, red, maroon, yellow, olive,
+    lime, green, aqua, teal, blue, navy, fuchsia, purple]
+
+enum intended_infrastructure: [
+    driving, sidewalk, biking, rail, tram, bus, taxi, hov]
+
+enum vehicle_category: [
+    car, bus, truck, trailer, vru_vehicle, other]
+
+enum driving_rule: [ left_hand_traffic, right_hand_traffic ]
+
+enum directionality: [
+    uni_direction, longitudinal, bi_direction, split, free, none, other]
+
+enum lane_type: [ driving, non_driving, vru_vehicles, pedestrian, other ]
+
+enum lane_use: [
+    normal, exit, entry, on_ramp, off_ramp, connecting_ramp, hov, bus,
+    mixed_traffic_vru, parking, stop, restricted, border, shoulder,
+    curb, median, bicycle, motorcycle, sidewalk, protected_sidewalk, none, other]
+
+enum side_left_right: [ left, right ]
+
+enum crossing_marking: [ unmarked, marked, zebra, other ]
+
+enum crossing_use: [ pedestrian, animal, bicycle, rail_road, other ]
+
+enum crossing_elevation: [ road_level, curb_level, refuge_island, other ]
+
+enum junction_direction: [ straight, right, u_turn, left, other ]
+
+enum route_overlap_kind: [ equal, start, end, inside, any, other ]
+
+enum lateral_overlap_kind: [ never, sometimes, always ]
+
+enum dynamic_profile: [ none, constant, smooth, asap ]
+
+enum lane_change_side: [ left, right, inside, outside, same ]
+
+enum gap_direction: [ ahead, behind, left, right, inside, outside ]
+
+enum headway_direction: [ ahead, behind ]
+
+enum lat_measure_by: [
+    left_to_left, left_to_center, left_to_right,
+    center_to_left, center_to_right,
+    right_to_left, right_to_center, right_to_right, closest]
+
+enum yaw_measure_by: [
+    length_to_length, length_to_width, width_to_length, width_to_width,
+    relative_to_north, relative_to_road]
+
+enum orientation_measured_by: [ absolute, relative_to_reference, relative_to_road ]
+
+enum movement_options: [ prefer_physical, prefer_non_physical, must_be_physical ]
+
+enum connect_route_points: [ road, lane_section, lane, crossing, waypoint ]
+
+enum path_interpolation: [ straight_line, smooth ]
+
+enum at: [ start, end, all ]
+
+enum movement_mode: [ monotonous, other ]
+
+enum track: [ actual, projected ]
+
+enum distance_direction: [ longitudinal, lateral ]
+
+enum distance_mode: [ reference_points, bounding_boxes ]
+
+enum relative_transform: [ world_relative, object_relative, road_relative, lane_relative ]
+
+enum on_route_type: [ on_road, on_lane_section, on_lane, on_crossing ]
+
+enum route_distance_enum: [ from_start, from_end ]
+
+###########
+# Structs
+###########
+
+# basic geometry
+struct position_3d:
+    x: length
+    y: length
+    z: length
+    def norm() -> length is undefined
+
+struct celestial_position_2d:
+    azimuth: angle
+    elevation: angle
+
+struct geodetic_position_2d:
+    latitude: angle
+    longitude: angle
+
+struct orientation_3d:
+    roll: angle
+    pitch: angle
+    yaw: angle
+
+struct pose_3d:
+    position: position_3d
+    orientation: orientation_3d
+
+struct translational_velocity_3d:
+    x: speed
+    y: speed
+    z: speed
+    def norm() -> speed is undefined
+
+struct orientation_rate_3d:
+    roll: angular_rate
+    pitch: angular_rate
+    yaw: angular_rate
+
+struct velocity_6d:
+    translational: translational_velocity_3d
+    angular: orientation_rate_3d
+
+struct translational_acceleration_3d:
+    x: acceleration
+    y: acceleration
+    z: acceleration
+    def norm() -> acceleration is undefined
+
+struct orientation_acceleration_3d:
+    roll: angular_acceleration
+    pitch: angular_acceleration
+    yaw: angular_acceleration
+
+struct acceleration_6d:
+    translational: translational_acceleration_3d
+    angular: orientation_acceleration_3d
+
+# vehicle geometry
+struct axle:
+    max_steering: angle
+    wheel_diameter: length
+    track_width: length
+    position_x: length
+    position_z: length
+    number_of_wheels: uint
+
+struct bounding_box:
+    center: position_3d
+    length_: length
+    width_: length
+    height_: length
+
+# crossing typing
+struct crossing_type:
+    marking: crossing_marking
+    use: crossing_use
+    elevation: crossing_elevation
+
+# route-point kinds (declared early to avoid forward refs)
+struct route:
+    route_length: length
+    route_dir: directionality
+    min_lanes: uint
+    max_lanes: uint
+    anchors: list of string
+
+struct route_element inherits route
+
+struct route_point inherits route_element:
+    rp_route: route
+    s: length
+    t: length
+
+struct xyz_point inherits route_element:
+    position: position_3d
+
+struct odr_point inherits route_element:
+    road_id: string
+    lane_id: string
+    s: length
+    t: length
+
+# minimal lane type to satisfy action targets
+struct lane:
+    id: string
+
+# paths / trajectories
+struct path inherits route:
+    points: list of pose_3d
+    interpolation: path_interpolation
+
+struct relative_path:
+    interpolation: path_interpolation
+
+struct relative_path_pose_3d inherits relative_path:
+    points: list of pose_3d
+
+struct relative_path_st inherits relative_path:
+    points: list of route_point
+
+struct relative_path_odr inherits relative_path:
+    points: list of odr_point
+
+struct trajectory:
+    points: list of pose_3d
+    time_stamps: list of time
+    interpolation: path_interpolation
+
+struct relative_trajectory:
+    time_stamps: list of time
+    interpolation: path_interpolation
+
+struct relative_trajectory_pose_3d inherits relative_trajectory:
+    points: list of pose_3d
+
+struct relative_trajectory_st inherits relative_trajectory:
+    points: list of route_point
+
+struct relative_trajectory_odr inherits relative_trajectory:
+    points: list of odr_point
+
+# shapes
+struct any_shape:
+    def duration() -> time is undefined
+
+struct any_acceleration_shape inherits any_shape:
+    def compute(time: time) -> acceleration is undefined
+
+struct any_speed_shape inherits any_shape:
+    def compute(time: time) -> speed is undefined
+
+struct any_position_shape inherits any_shape:
+    def compute(time: time) -> length is undefined
+
+struct any_lateral_shape inherits any_shape:
+    def compute(time: time) -> length is undefined
+
+struct common_acceleration_shape inherits any_acceleration_shape:
+    rate_profile: dynamic_profile
+    rate_peak: jerk
+    target: acceleration
+
+struct common_speed_shape inherits any_speed_shape:
+    rate_profile: dynamic_profile
+    rate_peak: acceleration
+    target: speed
+
+struct common_position_shape inherits any_position_shape:
+    rate_profile: dynamic_profile
+    rate_peak: speed
+    target: length
+
+struct common_lateral_shape inherits any_lateral_shape:
+    rate_profile: dynamic_profile
+    rate_peak: speed
+    target: length
+
+
+actor osc_actor
+
+actor physical_object inherits osc_actor:
+    box: bounding_box
+    obj_color: color
+    geometry_reference: string
+    center_of_gravity: position_3d
+    var pose: pose_3d
+    def object_distance(reference: physical_object, direction: distance_direction, mode: distance_mode) -> length is undefined
+    def get_s_coord() -> length is undefined
+    def get_t_coord() -> length is undefined
+    def get_route_point() -> route_point is undefined
+
+actor stationary_object inherits physical_object
+
+actor movable_object inherits physical_object:
+    def distance_along_route(
+        r: route,
+        origin: route_distance_enum = route_distance_enum.from_start
+    ) -> length is undefined
+    var vel_6d: velocity_6d          # renamed from 'velocity'
+    var accel_6d: acceleration_6d    # renamed from 'acceleration'
+    var speed_value: speed
+
+actor traffic_participant inherits movable_object:
+    tf_intended_infrastructure: list of intended_infrastructure
+    def time_to_collision(reference: physical_object) -> time is undefined
+    def time_headway(reference: physical_object) -> time is undefined
+    def space_gap(reference: physical_object, direction: distance_direction) -> length is undefined
+
+actor vehicle inherits traffic_participant:
+    var category: vehicle_category
+    var axles: list of axle
+    var rear_overhang: length
+
+actor person inherits traffic_participant
+
+
+action osc_actor.osc_action
+
+action movable_object.action_for_movable_object inherits osc_actor.osc_action
+
+action movable_object.move inherits movable_object.action_for_movable_object
+
+action movable_object.remain_stationary inherits movable_object.action_for_movable_object
+
+action movable_object.assign_position inherits movable_object.action_for_movable_object:
+    position: position_3d
+    rp: route_point
+    odr: odr_point
+
+action movable_object.assign_orientation inherits movable_object.action_for_movable_object:
+    target: orientation_3d
+
+action movable_object.assign_speed inherits movable_object.action_for_movable_object:
+    target: speed
+
+action movable_object.assign_acceleration inherits movable_object.action_for_movable_object:
+    target: acceleration
+
+action movable_object.change_speed inherits movable_object.action_for_movable_object:
+    target: speed
+    rate_profile: dynamic_profile
+    rate_peak: acceleration
+
+action movable_object.keep_speed inherits movable_object.action_for_movable_object
+
+action movable_object.change_acceleration inherits movable_object.action_for_movable_object:
+    target: acceleration
+    rate_profile: dynamic_profile
+    rate_peak: jerk
+
+action movable_object.keep_acceleration inherits movable_object.action_for_movable_object
+
+
+# vehicle actions
+action vehicle.action_for_vehicle inherits movable_object.action_for_movable_object
+
+action vehicle.drive inherits vehicle.action_for_vehicle
+
+action vehicle.follow_lane inherits vehicle.action_for_vehicle:
+    offset: length
+    rate_profile: dynamic_profile
+    rate_peak: speed
+    target: lane
+
+action vehicle.change_lane inherits vehicle.action_for_vehicle:
+    num_of_lanes: int
+    side: lane_change_side
+    reference: physical_object
+    offset: length
+    rate_profile: dynamic_profile
+    rate_peak: speed
+    target: lane
+
+action vehicle.change_space_gap inherits vehicle.action_for_vehicle:
+    target: length
+    direction: gap_direction
+    reference: physical_object
+
+action vehicle.keep_space_gap inherits vehicle.action_for_vehicle:
+    reference: physical_object
+    direction: distance_direction
+
+
+# person action
+action person.action_for_person inherits movable_object.action_for_movable_object
+action person.walk inherits person.action_for_person
+
+#####################################
+# Modifiers
+# Note: original names (e.g., "modifier speed") conflicted with type names.
+# To satisfy the parser, we prefix with "mod_" and avoid param names equal to types/enums.
+#####################################
+
+modifier mod_position of movable_object.action_for_movable_object:
+    dist_value: length
+    time_value: time
+    ahead_of, behind_obj: physical_object
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_distance of movable_object.action_for_movable_object:
+    dist_value: length
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_lane of movable_object.action_for_movable_object:
+    lane_num: uint
+    same_as: physical_object
+    side_of: physical_object
+    side: side_left_right
+    from_side: side_left_right
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_keep_lane of movable_object.action_for_movable_object:
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_lateral of movable_object.action_for_movable_object:
+    offset: length
+    left_of, right_of, same_as, side_of: physical_object
+    side: side_left_right
+    measure_by: lat_measure_by
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_yaw of movable_object.action_for_movable_object:
+    angle_value: angle
+    relative_to: physical_object
+    measure_by: yaw_measure_by
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_orientation of movable_object.action_for_movable_object:
+    yaw: angle
+    pitch: angle
+    roll: angle
+    relative_to: physical_object
+    measured_by: orientation_measured_by
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_along of movable_object.action_for_movable_object:
+    route_ref: route
+    start_offset: length
+    end_offset: length
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_keep_position of movable_object.action_for_movable_object:
+    shape: any_shape
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+
+modifier mod_along_trajectory of movable_object.action_for_movable_object:
+    traj_ref: trajectory
+    start_offset: length
+    end_offset: length
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+
+modifier stationary_object.location:
+    pose: pose_3d
+
+modifier mod_speed of movable_object.action_for_movable_object:
+    speed_target: speed
+    faster_than, slower_than, same_as: physical_object
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_acceleration of movable_object.action_for_movable_object:
+    accel_target: acceleration
+    faster_than, slower_than, same_as: physical_object
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_keep_speed of movable_object.action_for_movable_object:
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_change_speed of movable_object.action_for_movable_object:
+    speed_target: speed
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_physical_movement of movable_object.action_for_movable_object:
+    option: movement_options
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+
+modifier mod_change_lane of movable_object.action_for_movable_object:
+    lane_num: uint
+    side: side_left_right
+    at_pos: at
+    move_mode: movement_mode
+    track_mode: track
+    shape: any_shape
+

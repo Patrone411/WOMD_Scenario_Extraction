@@ -1,0 +1,22 @@
+import standard.osc
+
+scenario top:
+    ego_vehicle: vehicle
+    npc: vehicle
+
+
+    do serial:
+        CCrb: parallel(duration: [4s..9s]):
+            npc.drive() with:
+                speed([40kph..60kph], at: start)
+                keep_lane()
+                acceleration([-6meter_per_sec_sqr..-2meter_per_sec_sqr], at: end)
+            ego_vehicle.drive() with:
+                speed([40kph..60kph], at: start)
+
+                lane(same_as: npc, at: start)
+                keep_lane()
+                #position([0m..150m], behind: other_car)
+                position([12m..40m], behind: npc, at: start)
+                position([1m..40m], behind: npc, at: end)
+                until rise(ego_vehicle.time_to_collision(reference: npc) < 5s)

@@ -1,0 +1,21 @@
+import standard.osc
+
+scenario top:
+    path: path                    
+    path.min_lanes(2)              
+    ego_vehicle: vehicle           
+    npc: vehicle                    
+
+    do serial:
+        change_lane: parallel(duration: [4s..9s]):
+            ego_vehicle.drive(path) with:
+                speed([30kph..120kph])
+                lane(-1, at: start)
+                keep_lane()
+            npc.drive(path) with:
+                speed([30kph..120kph])
+                position([5m..50m], ahead_of: ego_vehicle, at: start)
+                lane(-2, at: start)
+                change_lane(1, side: left)
+                lane(same_as: ego_vehicle, at: end)              
+                position([5m..50m], ahead_of: ego_vehicle, at: end)

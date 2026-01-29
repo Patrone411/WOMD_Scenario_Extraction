@@ -1,0 +1,2 @@
+pairs_with_data,total_pairs,comparable_timesteps_total,overall_mae,overall_bias,overall_rmse,within_0.25s_rate_overall,within_0.5s_rate_overall,within_1.0s_rate_overall,within_2.0s_rate_overall,within_5.0s_rate_overall,mae_median,mae_p10,mae_p90
+88,164,1096,0.38233667016850476,0.0670493516299258,0.4388803580427063,0.7335766423357665,0.8795620437956204,0.9197080291970803,0.9470802919708029,0.9945255474452555,0.26973909625577086,0.0832224738489136,2.911764705882353

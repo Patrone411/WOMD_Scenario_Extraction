@@ -1,0 +1,2 @@
+scenario_id,pairs,comparable_pairs_total,mae_weighted,bias_weighted,rmse_weighted,corr_weighted,within_0.25s_rate_weighted,within_0.5s_rate_weighted,within_1.0s_rate_weighted,within_2.0s_rate_weighted,within_5.0s_rate_weighted,median_abs_error_weighted
+4680e1fb10c57daa,164.0,1096.0,0.38233667016850476,0.06704935162992581,0.43888035804270636,,0.7335766423357665,0.8795620437956204,0.9197080291970803,0.9470802919708029,0.9945255474452555,

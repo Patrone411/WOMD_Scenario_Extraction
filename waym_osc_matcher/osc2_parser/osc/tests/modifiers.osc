@@ -1,0 +1,21 @@
+import standard.osc
+
+scenario top:
+    path: path                      # A path in the map
+    path.min_lanes(2)         # Path should have at least two lanes
+
+    ego_vehicle: vehicle
+    second_car: vehicle
+    npc: person               # The other car
+
+    ego_start_speed: speed = 30kph
+    drive_duration: time = 12s
+    do serial:
+        get_ahead: parallel(duration: 15s):
+            ego_vehicle.move(drive_duration)
+            ego_vehicle.drive(drive_duration) with:
+                speed(0kph, at: end)
+                speed(0kph, at: start)
+                speed(0kph, at: all)
+
+            

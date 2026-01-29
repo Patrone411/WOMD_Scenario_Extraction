@@ -1,0 +1,32 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+description = "extractor framework"
+authors = ["Patrick Kasten <patrick.kasten@iav.de>"]
+name = "waymo-osc-extractor"
+version = "0.1.0"
+
+[project]
+version = "0.1.0"
+name = "waymo-osc-extractor"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+  { name = "Patrick Kasten", email = "patrick.kasten@iav.de" },
+  { name = "Doerte Waldoestl", email = "doerte.waldoestl@iav.de" },
+]
+
+maintainers = [
+  { name = "Doerte Waldoestl", email = "doerte.waldoestl@iav.de" },
+  { name = "Patrick Kasten", email = "patrick.kasten@iav.de" }
+]
+keywords = ["waymo", "openscenario", "osc", "generator", "simulation"]
+
+dependencies = [
+  "boto3>=1.40.36",
+  "waymo-open-dataset-tf-2-12-0>=1.6.7",
+  "shapely>=2.0.7",
+]

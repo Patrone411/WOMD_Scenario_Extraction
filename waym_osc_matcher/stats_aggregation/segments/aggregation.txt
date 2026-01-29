@@ -1,0 +1,15 @@
+=== Aggregation Result Coverage ===
+Files parsed successfully: 4894
+Sum covered_value: 9448302.855265887
+Sum total_value:   15879417.24082455
+Min percentage: 0.0
+Max percentage: 100.00000000000001
+Avg percentage: 58.67018497202067
+
+
+=== Aggregation Result Summary ===
+Files scanned: 1000
+Lines read:   2033425
+
+Segments num_lanes=2: 1358623
+Segments num_lanes=3: 674802

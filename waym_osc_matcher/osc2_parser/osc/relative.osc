@@ -1,0 +1,43 @@
+#import chopped_standard.osc
+import standard.osc
+
+scenario top:
+    path: path                      # A path in the map
+    path.min_lanes(2)         # Path should have at least two lanes
+    test_road_id: road_id = "test_r_id"
+    test_lane_id: lane_id = "test_l_id"
+    test_s: s = 3.0
+    test_t: t = 1.5
+    roll_t: angle = 30deg
+    pitch_t: angle = 40deg
+    yaw_t: angle  = 50deg
+    test_odr_point: odr_point = odr_point(test_road_id , test_lane_id, test_s, test_t)
+    test_orientation_3d: orientation_3d = orientation_3d(roll_t, pitch_t, yaw_t)
+
+    ego_vehicle: vehicle
+    second_car: vehicle
+    npc: person   
+                # The other car
+    s: speed with:
+        keep (it in [40kph..60kph])
+
+    ego_start_speed: speed = 30kph
+    do serial:
+        get_ahead: parallel(duration: 15s):
+            ego_vehicle.change_lane(num_of_lanes: 1, side: left, reference: second_car)
+            ego_vehicle.assign_speed(s)
+            ego_vehicle.assign_orientation(test_orientation_3d)
+            ego_vehicle.assign_position(test_odr_point)
+            ego_vehicle.change_space_gap(target: 1m, direction: ahead, reference: second_car)
+            ego_vehicle.drive(12s) with:
+                lane(1)
+                speed(s)
+            second_car.drive() with:
+                position(10m, ahead_of: ego_vehicle, at: start)
+                speed(10kph, at: start)
+                position(10m, behind: ego_vehicle, at: end)
+                speed(5kph, at: end)
+                lane(2)
+
+
+

@@ -1,0 +1,6 @@
+boto3
+geopandas
+waymo-open-dataset-tf-2-12-0
+behave
+poetry
+#pyinstrument

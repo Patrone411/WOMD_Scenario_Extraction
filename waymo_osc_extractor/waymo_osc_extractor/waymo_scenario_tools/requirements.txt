@@ -1,0 +1,9 @@
+boto3==1.37.38
+matplotlib==3.6.1
+networkx==2.8
+numpy==1.23.5
+scipy==1.9.1
+Shapely== 2.0.7
+smart_open==7.3.0.post1
+tensorflow==2.13.0
+waymo-open-dataset-tf-2-12-0==1.6.7

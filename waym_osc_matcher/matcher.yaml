@@ -1,0 +1,152 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: waymo-matcher-stats-1381002
+  namespace: scenario-mining
+spec:
+  completionMode: Indexed
+  completions: 1000
+  parallelism: 10
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        job-name: waymo-matcher-stats-1381002
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: gitlab-matcher-pull
+
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            job-name: waymo-matcher-stats-1381002
+
+      containers:
+      - name: matcher-stats-1381002
+        image: registry.gitlab.iavgroup.local/caledon/scenariobased-testing/waymo_osc_matcher:build-1381002
+        imagePullPolicy: IfNotPresent
+        terminationMessagePolicy: FallbackToLogsOnError
+
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 5"]
+
+        env:
+        # --- OSC / matching config ---
+        - name: OSC_FILE
+          value: "change_lane.osc"
+        - name: FPS
+          value: "10"
+        - name: BLOCK_OVERLAP
+          value: "start"
+        - name: USE_SED
+          value: "1"
+        - name: LEFT_IS_DECREASING
+          value: "1"
+
+        # --- Sampling (Histos: hit vs baseline) ---
+        # Empfehlung für große Läufe:
+        - name: BASE_SAMPLES_PER_BINDING
+          value: "1"
+        - name: HIT_SAMPLES_PER_BINDING
+          value: "20"
+        - name: SEED
+          value: "0"
+
+        # Optionaler Deckel (falls Segmente extrem viele Bindings erzeugen)
+        - name: MAX_BINDINGS_PER_SEG
+          value: "20000"
+
+        # --- S3 input (pickles) ---
+        - name: INPUT_BUCKET
+          value: "waymo"
+        - name: BASE_PREFIX_ROOT
+          value: "results/run_1331520_full"
+
+        # --- S3 output (stats) ---
+        - name: UPLOAD_RESULTS
+          value: "1"
+        - name: OUTPUT_BUCKET
+          value: "waymo"
+        - name: OUTPUT_PREFIX
+          value: "results/matching_stats"   # -> .../<osc>/<shard>/stats_shard.json
+
+        # Optional: Hits JSONL nur für Debug, im Produktionslauf aus!
+        - name: WRITE_HITS_JSONL
+          value: "0"
+
+        # --- S3 endpoint / TLS ---
+        - name: S3_ENDPOINT_URL
+          value: "https://gif.s3.iavgroup.local"
+        - name: AWS_CA_BUNDLE
+          value: "/etc/iav-ca/IAV-CA-Bundle.pem"
+        - name: S3_VERIFY_PATH
+          value: "/etc/iav-ca/IAV-CA-Bundle.pem"
+
+        # --- sharding ---
+        - name: JOB_COMPLETION_INDEX
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.labels['batch.kubernetes.io/job-completion-index']
+        - name: MAX_SHARD_INDEX
+          value: "999"
+        - name: START_OFFSET
+          value: "0"
+
+        # --- stability knobs ---
+        - name: PYTHONFAULTHANDLER
+          value: "1"
+        - name: LD_PRELOAD
+          value: "/lib/x86_64-linux-gnu/libSegFault.so"
+        - name: SEGFAULT_SIGNALS
+          value: "all"
+        - name: OMP_NUM_THREADS
+          value: "1"
+        - name: MKL_NUM_THREADS
+          value: "1"
+        - name: OPENBLAS_NUM_THREADS
+          value: "1"
+        - name: NUMEXPR_NUM_THREADS
+          value: "1"
+
+        envFrom:
+        - secretRef:
+            name: s3-creds
+
+        volumeMounts:
+        - name: iav-ca
+          mountPath: /etc/iav-ca
+          readOnly: true
+
+        resources:
+          requests:
+            cpu: "1"
+            memory: "6Gi"
+            ephemeral-storage: "10Gi"
+          limits:
+            cpu: "2"
+            memory: "10Gi"
+            ephemeral-storage: "30Gi"
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          capabilities:
+            drop: [ "NET_RAW" ]
+
+      volumes:
+      - name: iav-ca
+        secret:
+          secretName: iav-ca
+
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      schedulerName: default-scheduler
+      securityContext: {}

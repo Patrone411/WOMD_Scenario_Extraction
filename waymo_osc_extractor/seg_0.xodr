@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OpenDRIVE>
+  <header revMajor="1" revMinor="5" name="segment_seg_0" version="1.00" date="2025-01-01T00:00:00" north="0" south="0" east="0" west="0" vendor="auto"/>
+  <road name="segment_seg_0" length="440.892" id="1" junction="-1">
+    <planView>
+      <geometry s="0.000000" x="777.833094" y="-1703.163128" hdg="2.644880254" length="32.314869">
+        <line/>
+      </geometry>
+      <geometry s="32.314869" x="749.423348" y="-1687.763871" hdg="2.639908638" length="85.694133">
+        <line/>
+      </geometry>
+      <geometry s="118.009002" x="674.288964" y="-1646.553329" hdg="2.642000955" length="130.240650">
+        <line/>
+      </geometry>
+      <geometry s="248.249653" x="559.966555" y="-1584.159308" hdg="2.639462061" length="75.821820">
+        <line/>
+      </geometry>
+      <geometry s="324.071473" x="493.504248" y="-1547.666704" hdg="2.631918780" length="18.462219">
+        <line/>
+      </geometry>
+      <geometry s="342.533691" x="477.388510" y="-1538.659125" hdg="2.621076855" length="15.478117">
+        <line/>
+      </geometry>
+      <geometry s="358.011809" x="463.960271" y="-1530.961428" hdg="2.608495292" length="10.989679">
+        <line/>
+      </geometry>
+      <geometry s="369.001487" x="454.495552" y="-1525.376437" hdg="2.599416967" length="22.934078">
+        <line/>
+      </geometry>
+      <geometry s="391.935565" x="434.850495" y="-1513.542433" hdg="2.612380803" length="10.375965">
+        <line/>
+      </geometry>
+      <geometry s="402.311530" x="425.893907" y="-1508.304094" hdg="2.628172531" length="12.234623">
+        <line/>
+      </geometry>
+      <geometry s="414.546153" x="415.236697" y="-1502.294945" hdg="2.636092029" length="26.346085">
+        <line/>
+      </geometry>
+    </planView>
+    <elevationProfile/>
+    <lanes>
+      <laneOffset s="0" a="0" b="0" c="0" d="0"/>
+      <laneSection s="0.000000">
+        <center>
+          <lane id="0" type="none" level="false">
+            <roadMark sOffset="0" type="solid" weight="standard" color="standard" width="0.12"/>
+          </lane>
+        </center>
+        <right>
+          <lane id="-1" type="driving" level="false">
+            <width sOffset="0" a="3.500" b="0" c="0" d="0"/>
+            <roadMark sOffset="0" type="broken" weight="standard" color="standard" width="0.12"/>
+          </lane>
+          <lane id="-2" type="driving" level="false">
+            <width sOffset="0" a="3.500" b="0" c="0" d="0"/>
+            <roadMark sOffset="0" type="broken" weight="standard" color="standard" width="0.12"/>
+          </lane>
+        </right>
+      </laneSection>
+    </lanes>
+  </road>
+</OpenDRIVE>

@@ -1,0 +1,24 @@
+import standard.osc
+
+scenario top:
+    path: path                      # A path in the map
+    path.min_lanes(2)               #min amount of lanes in the scene
+    ego_vehicle: vehicle            # ego car
+    npc: person              # npc car
+
+    event start
+    event left
+    
+    do serial:
+        person_into_ttc: parallel(duration: [2s..9s]):
+            npc.cross_lane(side: right, speed: [1kph..150kph])
+
+            ego_vehicle.drive(path) with:
+                speed([1kph..150kph])
+                lane(same_as: npc)
+                positiion(behind: npc, at: start)
+                until rise(ego_vehicle.time_to_collision(reference: npc) < 8s)
+
+            
+
+

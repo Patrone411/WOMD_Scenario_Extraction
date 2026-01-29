@@ -1,0 +1,26 @@
+import standard.osc
+
+scenario top:
+    path: path                     
+    path.min_lanes(2)              
+    ego_vehicle: vehicle            
+    npc: person              
+
+    do serial:
+        CPNA: parallel(duration: [2s..9s]):
+            ego_vehicle.drive(path) with:
+                speed([5kph..150kph])
+
+            npc.cross(path) with:
+                speed([1kph..25kph])
+                lane(same_as: ego_vehicle, at: end)
+                position([10m..25m], ahead_of: ego_vehicle, at: end)
+                position([1m..10m], ahead_of: ego_vehicle, at: end)
+
+
+            
+
+
+            
+
+

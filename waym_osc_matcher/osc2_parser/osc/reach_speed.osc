@@ -1,0 +1,5 @@
+scenario vehicle.reach_speed:
+        
+    speed: speed
+    do drive() with: 
+        speed(speed, at: end)

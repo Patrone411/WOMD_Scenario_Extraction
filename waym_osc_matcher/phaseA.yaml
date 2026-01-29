@@ -1,0 +1,161 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: waymo-matcher-1412067
+  namespace: scenario-mining
+spec:
+  completionMode: Indexed
+  completions: 1000
+  parallelism: 20
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        job-name: waymo-matcher-1412067
+    spec:
+      restartPolicy: Never
+      imagePullSecrets:
+      - name: gitlab-matcher-pull
+
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            job-name: waymo-matcher-1412067
+
+      containers:
+      - name: waymo-matcher-1412067
+               
+        image: registry.gitlab.iavgroup.local/caledon/scenariobased-testing/waymo_osc_matcher:build-1412067
+        imagePullPolicy: IfNotPresent
+        terminationMessagePolicy: FallbackToLogsOnError
+
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 5"]
+
+        env:
+        # --- OSC / matching config ---
+        - name: OSC_FILE
+          value: "change_lane.osc"
+
+        - name: USE_SED
+          value: "true"
+        - name: BLOCK_OVERLAP
+          value: "start"
+
+        # --- Phase-A collection switches ---
+        - name: COLLECT_UNCOND_DENOMS
+          value: "true"
+        - name: COLLECT_CALLS
+          value: "false"
+        - name: COLLECT_CHECKS
+          value: "false"
+        - name: COLLECT_PARAMS
+          value: "false"
+
+        # optional sampling knobs (werden in Phase A meist ignoriert, wenn COLLECT_PARAMS=false)
+        - name: HIT_SAMPLES_PER_BINDING
+          value: "30"
+        - name: BASE_SAMPLES_PER_BINDING
+          value: "30"
+        - name: BASELINE_ONLY_FOR_HIT_BINDINGS
+          value: "true"
+
+        # --- cap bindings (Performance-Sicherung) ---
+        - name: MAX_BINDINGS_PER_SEG
+          value: "5000"
+        # --- S3 input (pickles) ---
+        - name: INPUT_BUCKET
+          value: "waymo"
+        - name: BASE_PREFIX_ROOT
+          value: "results/run_1331520_full"   # -> /00000 .. /00999
+
+        # --- S3 output ---
+        - name: OUTPUT_BUCKET
+          value: "waymo"
+        - name: OUTPUT_PREFIX
+          value: "results/matching_fresh/phaseB"    # -> .../phaseA/<osc>/<shard>/...
+
+        - name: UPLOAD_RESULTS
+          value: "true"
+
+        # was wird geschrieben?
+        - name: WRITE_HITS_JSONL
+          value: "false"
+        - name: WRITE_EXAMPLE_WINDOWS_JSONL
+          value: "true"
+
+        # --- endpoint / TLS ---
+        - name: S3_ENDPOINT_URL
+          value: "https://gif.s3.iavgroup.local"
+        - name: AWS_CA_BUNDLE
+          value: "/etc/iav-ca/IAV-CA-Bundle.pem"
+        - name: S3_VERIFY_PATH
+          value: "/etc/iav-ca/IAV-CA-Bundle.pem"
+
+        # --- sharding ---
+        - name: JOB_COMPLETION_INDEX
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.labels['batch.kubernetes.io/job-completion-index']
+        - name: MAX_SHARD_INDEX
+          value: "999"
+        - name: START_OFFSET
+          value: "0"
+
+        # --- debug / stability knobs ---
+        - name: PYTHONFAULTHANDLER
+          value: "1"
+        - name: LD_PRELOAD
+          value: "/lib/x86_64-linux-gnu/libSegFault.so"
+        - name: SEGFAULT_SIGNALS
+          value: "all"
+        - name: OMP_NUM_THREADS
+          value: "1"
+        - name: MKL_NUM_THREADS
+          value: "1"
+        - name: OPENBLAS_NUM_THREADS
+          value: "1"
+        - name: NUMEXPR_NUM_THREADS
+          value: "1"
+
+        envFrom:
+        - secretRef:
+            name: s3-creds
+
+        volumeMounts:
+        - name: iav-ca
+          mountPath: /etc/iav-ca
+          readOnly: true
+
+        resources:
+          requests:
+            cpu: "1"
+            memory: "6Gi"
+            ephemeral-storage: "10Gi"
+          limits:
+            cpu: "2"
+            memory: "10Gi"
+            ephemeral-storage: "30Gi"
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          capabilities:
+            drop: ["NET_RAW"]
+
+      volumes:
+      - name: iav-ca
+        secret:
+          secretName: iav-ca
+
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      schedulerName: default-scheduler
+      securityContext: {}

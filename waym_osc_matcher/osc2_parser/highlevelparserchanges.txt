@@ -1,0 +1,106 @@
+here’s the high-level tour of the pipeline you’ve got now—from reading an .osc file to printing your PyTree—plus what we changed along the way.
+
+# 1) Parse → AST (+ symbols)
+
+**ANTLR parser (OpenSCENARIO2Parser) + `ASTBuilder` (listener)**
+
+* Walks the parse tree and builds a **typed AST** (`ast_node.*`) while maintaining **scopes** and **symbols**.
+* Tracks a **GlobalScope** and nested scopes for actors, actions, scenarios, structs, enums, methods, keep/do/wait… etc.
+* Safeguards we added:
+
+  * Safe parent/node cursor helpers (`_push_parent`, `_pop_parent`, `_open_node`) → no more `NoneType` scope crashes.
+  * `_define_or_reuse` + `_owner_for_actor_qualified` → idempotent definitions and correct owner resolution for qualified names.
+  * Graceful handling in SI units (factor/offset/exponents), enums, inherits, arguments, modifiers.
+  * Named arguments are attached as `ast_node.NamedArgument` under the right parent, so things like
+
+    * `parallel(duration: 15s)` land on the **parallel block**,
+    * `vehicle.drive(duration: 30s)` land on the **action call**.
+* Symbols for declarations (e.g., `ActionSymbol`, `ScenarioSymbol`, `EnumSymbol`, `StructSymbol`, `UnitSymbol`, etc.) are created and linked to their AST nodes (`declaration_address` where relevant).
+
+# 2) Scopes & symbol tables (redefinition strategy)
+
+**`BaseScope` / `LocalScope`**
+
+* `define()` **keeps the first** symbol as canonical and **collects redefinitions** in `redefinitions[name]` **without erroring**.
+  (This unblocks parsing of large libraries like `standard.osc` that redeclare names in different namespaces.)
+* `resolve()` walks outward to enclosing scopes; `is_key_found()` checks only as appropriate (global vs local).
+* This lets you defer namespace validity checks to a separate pass.
+
+**Namespace audit**
+
+* `check_namespace_collisions(global_scope, emit_errors=…)` walks all scopes after Pass 1 and reports genuine **illegal** collisions (same name, same namespace, same meaning) while ignoring benign “same name, different thing” cases.
+* You can print quick stats (scopes scanned, names with redefs, illegal collisions).
+
+# 3) Pass 1 (ConfigInit)
+
+**`ConfigInit`**
+
+* Consumes the AST and populates:
+
+  * **unit_dict / physical types**,
+  * **variables** (and initial values),
+  * **actor registry** (types and inheritance),
+  * other early semantic caches the later passes need.
+* After this pass, your AST nodes have scopes, and your config object has the runtime dictionaries needed by IR.
+
+# 4) Validation (semantics)
+
+**`SemanticsRegistry` (+ your JSON registry)**
+
+* Holds **actors**, **actions** (with overloads), **modifiers** (with variants), and **rules**.
+* You added `"duration": time` to the **base** action `"osc_actor.osc_action"`.
+
+**`SemanticValidator`**
+
+* Given an `ActionCall` (from IR), it:
+
+  1. Finds candidate actions for the invoker type,
+  2. **Merges inherited parameters** up the action family (new helper `_params_from_inherits`) so **base params like `duration`** are accepted by all derived actions (e.g., `vehicle.drive`),
+  3. Checks required/unknown args, then picks the matching overload,
+  4. Validates attached **modifiers** against their family + variant rules (`exactly_one_of`, `requires`, etc.).
+* Returns a `ValidationResult` with the resolved action, overload name, normalized args, and modifiers.
+
+# 5) IR lowering (AST → PyTree)
+
+**`IRLowering` (Pass 2)**
+
+* Walks the AST and produces a compact, executable **PyTree**:
+
+  * `ScenarioNode` → holds **actors**, **vars**, **events**, **blocks**.
+  * Blocks: `SerialBlock`, `ParallelBlock(duration=…)`.
+  * `ActionCall(actor, action, args, modifiers)` where:
+
+    * **Named args** from the action parentheses (e.g., `duration: 30s`) are captured in `ActionCall.args`.
+    * **Modifiers** (`with: speed(50kph), position(…)`) become `ModifierCall`s with positional + named args.
+* **Physical literals** (e.g., `50kph`, `30s`) are normalized to `Physical(num, unit)` using `unit_dict` and a small abbreviation map.
+* Parallel block `duration` is picked from the corresponding `NamedArgument` on the `DoMember`.
+
+# 6) Printing the PyTree
+
+**`print_ir`**
+
+* Pretty-prints scenarios, actors, vars, events, and the **do** tree.
+* We updated it to:
+
+  * Render **action arguments** inside parentheses (e.g., `ego_vehicle.drive(duration: 30s)`),
+  * Render **modifier named args** in OSC style (`key: value`) instead of `key=value`,
+  * Keep your unit rendering (`m`, `s`, `kph`, etc.).
+* Example output snippet now matches what you expect:
+
+  ```
+  ego_vehicle.drive(duration: 30s)
+    with speed(50kph)
+  ```
+
+---
+
+## How it flows together
+
+1. **Parse** `.osc` → **AST + scopes/symbols** (`ASTBuilder`).
+2. **Pass 1**: populate units/vars/actors (`ConfigInit`).
+3. (Optional) **namespace audit** (`check_namespace_collisions`).
+4. **Pass 2**: **IRLowering** builds PyTree (actions/mods/blocks/physicals).
+5. **Validate** each `ActionCall` against the **registry** (`SemanticValidator` with inherited params).
+6. **Print** the IR (`print_ir`)—now including action-level args like `duration`.
+
+That’s the current, working pipeline—robust parsing, deferred collision checking, inherited base parameters in validation, IR that preserves both block and action arguments, and clean OSC-style printing.

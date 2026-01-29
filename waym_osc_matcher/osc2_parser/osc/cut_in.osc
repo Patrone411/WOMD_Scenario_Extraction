@@ -1,0 +1,22 @@
+import standard.osc
+
+scenario top:
+    ego_vehicle: vehicle
+    other_car: vehicle
+
+
+    do serial:
+        overtake: parallel(duration: [2s..9s]):
+
+            ego_vehicle.drive() with:
+                lane(-1)
+                speed([1kph..150kph])
+                keep_lane()
+            other_car.drive() with:
+                speed([1kph..150kph])
+
+                lane(-2, at: start)
+                position([1m..100m], behind: ego_vehicle, at: start)
+                lane(same_as: ego_vehicle, at: end)
+                position([1m..100m], ahead_of: ego_vehicle, at: end)
+

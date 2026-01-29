@@ -1,0 +1,14 @@
+docker run --rm \
+  -e OSC_FILE=cross.osc \
+  -e INPUT_BUCKET=waymo \
+  -e BASE_PREFIX_ROOT=results/k8s_run_1331520_full \
+  -e OUTPUT_BUCKET=waymo \
+  -e OUTPUT_PREFIX=results/matching-test \
+  -e S3_ENDPOINT_URL=https://gif.s3.iavgroup.local \
+  -e AWS_ACCESS_KEY_ID=<"yourkey"> \
+  -e AWS_SECRET_ACCESS_KEY=<"yourkey"> \
+  -e AWS_DEFAULT_REGION=eu-west-1 \
+  -e AWS_CA_BUNDLE=/etc/iav-ca/IAV-CA-Bundle.pem \
+  -e S3_VERIFY_PATH=/etc/iav-ca/IAV-CA-Bundle.pem \
+  -v "$HOST_CERT":/etc/iav-ca/IAV-CA-Bundle.pem:ro \
+  your-registry/waymo-matcher:py38

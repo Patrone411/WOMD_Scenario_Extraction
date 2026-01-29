@@ -1,0 +1,17 @@
+-- Sums --
+n_pickles_processed: 359455.0
+bindings_enum_with_valid_windows: 55636384.0
+bindings_with_hits: 10244.0
+P_win_uncond: 0.0528266936087445
+P_win_cond: 8.995223948127768
+bindings_enum_total: 68440206.0
+P_binding: 0.18393015478578903
+
+-- Averages (sum / n_files) --
+n_pickles_processed_avg: 359.455
+bindings_enum_with_valid_windows_avg: 55636.384
+bindings_with_hits_avg: 10.244
+P_win_uncond_avg: 5.28266936087445e-05
+P_win_cond_avg: 0.008995223948127767
+bindings_enum_total_avg: 68440.206
+P_binding_avg: 0.00018393015478578904

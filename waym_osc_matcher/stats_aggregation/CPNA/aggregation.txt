@@ -1,0 +1,20 @@
+=== Aggregation Result ===
+Files parsed (n_files): 1000
+
+-- Sums --
+n_pickles_processed: 359455.0
+bindings_enum_with_valid_windows: 1030767.0
+bindings_with_hits: 4456.0
+P_win_uncond: 2.2969853394567967
+P_win_cond: 4.111967681872398
+bindings_enum_total: 1345244.0
+P_binding: 4.3864875060745945
+
+-- Averages (sum / n_files) --
+n_pickles_processed_avg: 359.455
+bindings_enum_with_valid_windows_avg: 1030.767
+bindings_with_hits_avg: 4.456
+P_win_uncond_avg: 0.0022969853394567965
+P_win_cond_avg: 0.004111967681872397
+bindings_enum_total_avg: 1345.244
+P_binding_avg: 0.004386487506074594

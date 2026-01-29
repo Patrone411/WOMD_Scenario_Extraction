@@ -1,0 +1,1 @@
+pyinstrument  -o reports/profile.html -m behave --junit ./features
